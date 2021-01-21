@@ -4,7 +4,7 @@ name: CI
 
 # Controls when the action will rrun. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # Triggers the workflow on push or pull requeest events but only for the main branch
   push:
     branches:
       - main
@@ -72,6 +72,18 @@ jobs:
              make kvmm.config
              make -j$(nproc)
              echo ::set-output name=build_exit_code::$?
+             
+           #If build was successful, upload the kernel artifact for the kvmm module builder to have available
+         - name: Upload Kernel artifact
+           id: upload-artifact
+           if: steps.build-kernel.outputs.build_exit_code == 0
+           uses: cloudkernels/minio-upload@master
+           with:
+             url: https://s3.nubificus.co.uk
+             access-key: ${{ secrets.AWS_ACCESS_KEY }}
+             secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+             local-path: ${{ matrix.versions }}/linux-${{ matrix.versions }}
+             remote-path: nbfc-assets/github/linux_kernel/${{ github.event.pull_request.head.sha }}/${{ matrix.versions }}/
              
          #some (safe) shenanigans to access this specific job's logs.
          - name: Set logs link
