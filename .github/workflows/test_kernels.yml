@@ -35,7 +35,8 @@ jobs:
          - name: install necessary packages
            run: | 
              sudo apt-get -y update
-             sudo apt-get install -y libelf-dev
+             sudo apt-get -y install build-essential libncurses-dev bc bison flex libssl-dev libelf-dev
+             sudo apt-get -y install fakeroot rsync git kmod cpio
              
          - name: Clone linux
            run: |
@@ -65,15 +66,18 @@ jobs:
            #working-directory: linux-$LINUX_VERSION
            run: |
              echo ::set-output name=build_exit_code::1
+             deliverypath=$PWD
              echo "MYMSG=Building failed for version $LINUX_VERSION" >> $GITHUB_ENV
              cd $LINUX_VERSION/linux-$LINUX_VERSION
              wget https://gist.githubusercontent.com/ananos/4749c77111a560503bd9725409d82800/raw/3e65dec157a7a19d965675054ef85ce8bc06c74b/basic%2520kernel%2520config -O arch/x86/configs/kvmm.config
              touch .config
              make kvmm.config
-             make -j$(nproc)
+             make deb-pkg -j $(nproc)
              echo ::set-output name=build_exit_code::$?
+             sudo mkdir -p artifacts/$LINUX_VERSION
+             sudo mv ../*.deb artifacts/$LINUX_VERSION
              
-           #If build was successful, upload the kernel artifact for the kvmm module builder to have available
+           #If build was successful, upload the kernel deb artifacts for the kvmm module builder to have available
          - name: Upload Kernel artifact
            id: upload-artifact
            if: steps.build-kernel.outputs.build_exit_code == 0
@@ -82,8 +86,8 @@ jobs:
              url: https://s3.nubificus.co.uk
              access-key: ${{ secrets.AWS_ACCESS_KEY }}
              secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-             local-path: ${{ matrix.versions }}/linux-${{ matrix.versions }}
-             remote-path: nbfc-assets/github/linux_kernel/${{ github.event.pull_request.head.sha }}/${{ matrix.versions }}/
+             local-path: ${{ matrix.versions }}/linux-${{ matrix.versions }}/artifacts/${{ matrix.versions }}
+             remote-path: nbfc-assets/github/linux_kernel_debs/
              
          #some (safe) shenanigans to access this specific job's logs.
          - name: Set logs link
