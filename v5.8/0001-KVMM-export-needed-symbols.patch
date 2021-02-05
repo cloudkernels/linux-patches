@@ -95,7 +95,7 @@ index 90cb90561446..1a52a0297728 100644
  
 +int kvmm_kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
 +{
-+	return kvm_arch_vcpu_ioctl_run(vcpu, run);
++	return kvm_arch_vcpu_ioctl_run(vcpu);
 +}
 +EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_run);
 +
