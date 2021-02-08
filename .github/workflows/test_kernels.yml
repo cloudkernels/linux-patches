@@ -75,7 +75,9 @@ jobs:
              make deb-pkg -j $(nproc)
              echo ::set-output name=build_exit_code::$?
              sudo mkdir -p artifacts/$LINUX_VERSION
-             sudo mv ../*.deb artifacts/$LINUX_VERSION
+             sudo mv ../*linux-headers*.deb artifacts/$LINUX_VERSION/linux-headers-$LINUX_VERSION-latest.deb
+             sudo mv ../*linux-image*.deb artifacts/$LINUX_VERSION/linux-image-$LINUX_VERSION-latest.deb
+             sudo mv ../*linux-libc-dev*.deb artifacts/$LINUX_VERSION/linux-libc-dev_$LINUX_VERSION-latest.deb
              
            #If build was successful, upload the kernel deb artifacts for the kvmm module builder to have available
          - name: Upload Kernel artifact
