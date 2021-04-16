@@ -19,7 +19,7 @@ jobs:
   # This workflow contains two jobs
     Patch-Linux:
      #tries to apply the patch to each version
-       runs-on: [ubuntu-latest]
+       runs-on: [cloud]
        #strategy matrix to run jobs in parallel for each version
        strategy:
          matrix:
