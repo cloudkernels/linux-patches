@@ -1,0 +1,69 @@
+From cb353482858b0baa830cdf6a70114534ecc27544 Mon Sep 17 00:00:00 2001
+From: Charalampos Mainas <cmainas@nubificus.com>
+Date: Tue, 8 Jun 2021 07:45:24 +0000
+Subject: [PATCH] Export vma allocation related functions
+
+KVMM guests use kernel allocated memory, which is obtained by vmalloc.
+On the other hand KVM expects a userspace memory and proccess to run
+guests. In order to avoid any changes in KVM code we the guest
+memory will be mapped to a real address space.
+
+As a result vm_area_alloc and vm_area_free functions need to be
+exported, THese are the functions which will be used to create the new
+mappings for the guest memory. Moreover mm_alloc is needed to create
+a new struct mm and not to use an existing one. Additionally
+arch_pick_mmap_layout is necessary to make get_unmapped_area work in
+the new mm.
+
+Signed-off-by: Anastassios Nanos <ananos@nubificus.co.uk>
+Signed-off-by: Konstantinos Papazafeiropoulos <kostis@nubificus.co.uk>
+Signed-off-by: Charalampos Mainas <cmainas@nubificus.co.uk>
+Signed-off-by: Stratos Psomadakis <psomas@nubificus.co.uk>
+---
+ arch/x86/mm/mmap.c | 1 +
+ kernel/fork.c      | 3 +++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/arch/x86/mm/mmap.c b/arch/x86/mm/mmap.c
+index cb91eccc4..e9a285113 100644
+--- a/arch/x86/mm/mmap.c
++++ b/arch/x86/mm/mmap.c
+@@ -147,6 +147,7 @@ void arch_pick_mmap_layout(struct mm_struct *mm, struct rlimit *rlim_stack)
+ 			rlim_stack);
+ #endif
+ }
++EXPORT_SYMBOL(arch_pick_mmap_layout);
+ 
+ unsigned long get_mmap_base(int is_legacy)
+ {
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 8c700f881..60e51d089 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -353,6 +353,7 @@ struct vm_area_struct *vm_area_alloc(struct mm_struct *mm)
+ 		vma_init(vma, mm);
+ 	return vma;
+ }
++EXPORT_SYMBOL(vm_area_alloc);
+ 
+ struct vm_area_struct *vm_area_dup(struct vm_area_struct *orig)
+ {
+@@ -370,6 +371,7 @@ void vm_area_free(struct vm_area_struct *vma)
+ {
+ 	kmem_cache_free(vm_area_cachep, vma);
+ }
++EXPORT_SYMBOL(vm_area_free);
+ 
+ static void account_kernel_stack(struct task_struct *tsk, int account)
+ {
+@@ -1073,6 +1075,7 @@ struct mm_struct *mm_alloc(void)
+ 	memset(mm, 0, sizeof(*mm));
+ 	return mm_init(mm, current, current_user_ns());
+ }
++EXPORT_SYMBOL(mm_alloc);
+ 
+ static inline void __mmput(struct mm_struct *mm)
+ {
+-- 
+2.31.1
+
