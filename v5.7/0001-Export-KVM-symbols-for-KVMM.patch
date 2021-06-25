@@ -1,6 +1,6 @@
-From 4b80edabc3923bd1edb3b2ec5e131fd27035d690 Mon Sep 17 00:00:00 2001
+From 6cd98c6fed819b18f6bc6d24ae5e33dcc1b69ee8 Mon Sep 17 00:00:00 2001
 From: Charalampos Mainas <cmainas@nubificus.com>
-Date: Tue, 8 Jun 2021 07:39:21 +0000
+Date: Tue, 15 Jun 2021 10:29:47 +0000
 Subject: [PATCH 1/2] Export KVM symbols for KVMM
 
 Expose a set of KVM functions to the kernel, in order to be
@@ -37,7 +37,7 @@ Signed-off-by: Anastassios Nanos <ananos@nubificus.co.uk>
 Signed-off-by: Charalampos Mainas <cmainas@nubificus.co.uk>
 Signed-off-by: Konstantinos Papazafeiropoulos <kostis@nubificus.co.uk>
 Signed-off-by: Stratos Psomadakis <psomas@nubificus.co.uk>
-
+---
  arch/arm64/include/asm/kvm_host.h |  6 ++++
  arch/arm64/kvm/fpsimd.c           |  6 ++++
  arch/arm64/kvm/guest.c            | 48 +++++++++++++++++++++++++++++++
@@ -238,10 +238,10 @@ index 901cd1fde..c7d2071da 100644
  					      u32 function, u32 index)
  {
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index d786c7d27..0a5706bf5 100644
+index c17e6eb9a..8fdd13bdf 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -8781,6 +8781,13 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *kvm_run)
+@@ -8796,6 +8796,13 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *kvm_run)
  	return r;
  }
  
@@ -255,7 +255,7 @@ index d786c7d27..0a5706bf5 100644
  static void __get_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
  {
  	if (vcpu->arch.emulate_regs_need_sync_to_vcpu) {
-@@ -8824,6 +8831,12 @@ int kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
+@@ -8839,6 +8846,12 @@ int kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
  	vcpu_put(vcpu);
  	return 0;
  }
@@ -268,7 +268,7 @@ index d786c7d27..0a5706bf5 100644
  
  static void __set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
  {
-@@ -8864,6 +8877,12 @@ int kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
+@@ -8879,6 +8892,12 @@ int kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
  	vcpu_put(vcpu);
  	return 0;
  }
@@ -281,7 +281,7 @@ index d786c7d27..0a5706bf5 100644
  
  void kvm_get_cs_db_l_bits(struct kvm_vcpu *vcpu, int *db, int *l)
  {
-@@ -8919,6 +8938,12 @@ int kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu,
+@@ -8934,6 +8953,12 @@ int kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu,
  	vcpu_put(vcpu);
  	return 0;
  }
@@ -294,7 +294,7 @@ index d786c7d27..0a5706bf5 100644
  
  int kvm_arch_vcpu_ioctl_get_mpstate(struct kvm_vcpu *vcpu,
  				    struct kvm_mp_state *mp_state)
-@@ -9118,6 +9143,12 @@ int kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
+@@ -9133,6 +9158,12 @@ int kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
  	vcpu_put(vcpu);
  	return ret;
  }
@@ -308,10 +308,10 @@ index d786c7d27..0a5706bf5 100644
  int kvm_arch_vcpu_ioctl_set_guest_debug(struct kvm_vcpu *vcpu,
  					struct kvm_guest_debug *dbg)
 diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 01276e3d0..6cbdc1119 100644
+index 131cc1527..d63eeca3d 100644
 --- a/include/linux/kvm_host.h
 +++ b/include/linux/kvm_host.h
-@@ -1408,11 +1408,16 @@ int kvm_arch_mmu_notifier_invalidate_range(struct kvm *kvm,
+@@ -1411,11 +1411,16 @@ int kvm_arch_mmu_notifier_invalidate_range(struct kvm *kvm,
  
  #ifdef CONFIG_HAVE_KVM_VCPU_RUN_PID_CHANGE
  int kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu);
@@ -328,7 +328,7 @@ index 01276e3d0..6cbdc1119 100644
  #endif /* CONFIG_HAVE_KVM_VCPU_RUN_PID_CHANGE */
  
  typedef int (*kvm_vm_thread_fn_t)(struct kvm *kvm, uintptr_t data);
-@@ -1421,4 +1426,15 @@ int kvm_vm_create_worker_thread(struct kvm *kvm, kvm_vm_thread_fn_t thread_fn,
+@@ -1424,4 +1429,15 @@ int kvm_vm_create_worker_thread(struct kvm *kvm, kvm_vm_thread_fn_t thread_fn,
  				uintptr_t data, const char *name,
  				struct task_struct **thread_ptr);
  
@@ -405,10 +405,10 @@ index 00c747dbc..ad7e540dc 100644
  {
  	if (kvm->coalesced_mmio_ring)
 diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 74bdb7bf3..dcbecc2ab 100644
+index 731c1e517..b1ed23094 100644
 --- a/virt/kvm/kvm_main.c
 +++ b/virt/kvm/kvm_main.c
-@@ -761,6 +761,11 @@ static struct kvm *kvm_create_vm(unsigned long type)
+@@ -769,6 +769,11 @@ static struct kvm *kvm_create_vm(unsigned long type)
  	mmdrop(current->mm);
  	return ERR_PTR(r);
  }
@@ -420,7 +420,7 @@ index 74bdb7bf3..dcbecc2ab 100644
  
  static void kvm_destroy_devices(struct kvm *kvm)
  {
-@@ -816,6 +821,12 @@ static void kvm_destroy_vm(struct kvm *kvm)
+@@ -824,6 +829,12 @@ static void kvm_destroy_vm(struct kvm *kvm)
  	mmdrop(mm);
  }
  
@@ -433,7 +433,7 @@ index 74bdb7bf3..dcbecc2ab 100644
  void kvm_get_kvm(struct kvm *kvm)
  {
  	refcount_inc(&kvm->users_count);
-@@ -1332,6 +1343,12 @@ static int kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
+@@ -1340,6 +1351,12 @@ static int kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
  
  	return kvm_set_memory_region(kvm, mem);
  }
@@ -446,7 +446,7 @@ index 74bdb7bf3..dcbecc2ab 100644
  
  #ifndef CONFIG_KVM_GENERIC_DIRTYLOG_READ_PROTECT
  /**
-@@ -3078,6 +3095,12 @@ static int kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
+@@ -3086,6 +3103,12 @@ static int kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
  	return r;
  }
  
