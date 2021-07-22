@@ -8,8 +8,9 @@ on:
   push:
     branches:
       - main
-      - action_branch
-
+  pull_request:
+    branches:
+      - main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -61,7 +62,7 @@ jobs:
     Patch-Linux:
      #tries to apply the patch to each version
        needs: [generate-matrix]
-       runs-on: [ubuntu-latest]
+       runs-on: ${{ matrix.architecture }}
        #strategy matrix to run jobs in parallel for each version
        strategy:
          matrix:
@@ -74,16 +75,18 @@ jobs:
              ARCHITECTURE: ${{ matrix.architecture }}
 
        steps:
+         - name: Cleanup previous runs
+           run: |
+             sudo rm -rf ${{ github.workspace }}/*
+             sudo rm -rf ${{ github.workspace }}/.??*
+
          - uses: actions/checkout@v2
+
          - name: install necessary packages
            run: |
              sudo apt-get -y update
              sudo apt-get -y install build-essential libncurses-dev bc bison flex libssl-dev libelf-dev
              sudo apt-get -y install fakeroot rsync git kmod cpio
-             if [[ $ARCHITECTURE == "arm64" ]]
-             then
-                sudo apt-get -y install gcc-aarch64-linux-gnu
-             fi
 
          - name: Clone linux
            run: |
@@ -101,7 +104,7 @@ jobs:
              for i in ../*.patch
              do
                  git config user.name "CI Bot"
-                 git config user.email "ci-bot@nubis-pc.eu"
+                 git config user.email "ci-bot@nubificus.co.uk"
                  git am $i
              done
              echo ::set-output name=patch_exit_code::0
@@ -120,18 +123,18 @@ jobs:
              if [[ $ARCHITECTURE == "arm64" ]]
              then
                 wget https://gist.githubusercontent.com/ananos/dc2e2323f1b9bcb93c24f307e367ae80/raw/a001e5dd3b02fb79001296b1f9ae39270288f8d9/aarch64_config -O arch/arm64/configs/kvmm.config
-                touch .config
-                CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 make kvmm.config
-                CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 make deb-pkg -j $(nproc)
-                sudo mv ../*linux-image*-dbg*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-image-$LINUX_VERSION-dbg-latest.deb
              else
                 wget https://gist.githubusercontent.com/ananos/4749c77111a560503bd9725409d82800/raw/3e65dec157a7a19d965675054ef85ce8bc06c74b/basic%2520kernel%2520config -O arch/x86/configs/kvmm.config
-                touch .config
-                make kvmm.config
-                make deb-pkg -j $(nproc)
              fi
+             touch .config
+             make kvmm.config
+             make deb-pkg -j $(nproc)
              echo ::set-output name=build_exit_code::$?
              sudo mv ../*linux-headers*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-headers-$LINUX_VERSION-latest.deb
+             if [[ $ARCHITECTURE == "arm64" ]]
+             then
+                sudo mv ../*linux-image*-dbg*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-image-$LINUX_VERSION-dbg-latest.deb
+             fi
              sudo mv ../*linux-image*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-image-$LINUX_VERSION-latest.deb
              sudo mv ../*linux-libc-dev*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-libc-dev_$LINUX_VERSION-latest.deb
 
