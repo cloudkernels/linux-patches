@@ -75,16 +75,22 @@ jobs:
              ARCHITECTURE: ${{ matrix.architecture }}
 
        steps:
-         - uses: actions/checkout@v2
-         - name: install necessary packages
+         - name: Cleanup previous runs
            run: |
-             sudo apt-get -y update
-             sudo apt-get -y install build-essential libncurses-dev bc bison flex libssl-dev libelf-dev
-             sudo apt-get -y install fakeroot rsync git kmod cpio
-             #if [[ $ARCHITECTURE == "arm64" ]]
-             #then
-             #   sudo apt-get -y install gcc-aarch64-linux-gnu
-             #fi
+             sudo rm -rf ${{ github.workspace }}/*
+             sudo rm -rf ${{ github.workspace }}/.??*
+
+         - uses: actions/checkout@v2
+
+#         - name: install necessary packages
+#           run: |
+#             sudo apt-get -y update
+#             sudo apt-get -y install build-essential libncurses-dev bc bison flex libssl-dev libelf-dev
+#             sudo apt-get -y install fakeroot rsync git kmod cpio
+#             #if [[ $ARCHITECTURE == "arm64" ]]
+#             #then
+#             #   sudo apt-get -y install gcc-aarch64-linux-gnu
+#             #fi
 
          - name: Clone linux
            run: |
@@ -136,6 +142,9 @@ jobs:
              make deb-pkg -j $(nproc)
              echo ::set-output name=build_exit_code::$?
              sudo mv ../*linux-headers*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-headers-$LINUX_VERSION-latest.deb
+             if [[ $ARCHITECTURE == "arm64" ]]
+                sudo mv ../*linux-image*-dbg*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-image-$LINUX_VERSION-dbg-latest.deb
+             fi
              sudo mv ../*linux-image*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-image-$LINUX_VERSION-latest.deb
              sudo mv ../*linux-libc-dev*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-libc-dev_$LINUX_VERSION-latest.deb
 
