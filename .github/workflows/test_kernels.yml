@@ -82,15 +82,11 @@ jobs:
 
          - uses: actions/checkout@v2
 
-#         - name: install necessary packages
-#           run: |
-#             sudo apt-get -y update
-#             sudo apt-get -y install build-essential libncurses-dev bc bison flex libssl-dev libelf-dev
-#             sudo apt-get -y install fakeroot rsync git kmod cpio
-#             #if [[ $ARCHITECTURE == "arm64" ]]
-#             #then
-#             #   sudo apt-get -y install gcc-aarch64-linux-gnu
-#             #fi
+         - name: install necessary packages
+           run: |
+             sudo apt-get -y update
+             sudo apt-get -y install build-essential libncurses-dev bc bison flex libssl-dev libelf-dev
+             sudo apt-get -y install fakeroot rsync git kmod cpio
 
          - name: Clone linux
            run: |
@@ -127,15 +123,8 @@ jobs:
              if [[ $ARCHITECTURE == "arm64" ]]
              then
                 wget https://gist.githubusercontent.com/ananos/dc2e2323f1b9bcb93c24f307e367ae80/raw/a001e5dd3b02fb79001296b1f9ae39270288f8d9/aarch64_config -O arch/arm64/configs/kvmm.config
-                #touch .config
-                #CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 make kvmm.config
-                #CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 make deb-pkg -j $(nproc)
-                #sudo mv ../*linux-image*-dbg*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-image-$LINUX_VERSION-dbg-latest.deb
              else
                 wget https://gist.githubusercontent.com/ananos/4749c77111a560503bd9725409d82800/raw/3e65dec157a7a19d965675054ef85ce8bc06c74b/basic%2520kernel%2520config -O arch/x86/configs/kvmm.config
-                #touch .config
-                #make kvmm.config
-                #make deb-pkg -j $(nproc)
              fi
              touch .config
              make kvmm.config
