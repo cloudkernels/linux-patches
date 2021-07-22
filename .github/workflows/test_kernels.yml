@@ -132,6 +132,7 @@ jobs:
              echo ::set-output name=build_exit_code::$?
              sudo mv ../*linux-headers*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-headers-$LINUX_VERSION-latest.deb
              if [[ $ARCHITECTURE == "arm64" ]]
+             then
                 sudo mv ../*linux-image*-dbg*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-image-$LINUX_VERSION-dbg-latest.deb
              fi
              sudo mv ../*linux-image*.deb artifacts/$ARCHITECTURE/$LINUX_VERSION/linux-image-$LINUX_VERSION-latest.deb
