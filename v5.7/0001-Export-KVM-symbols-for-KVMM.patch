@@ -1,7 +1,7 @@
 From 6cd98c6fed819b18f6bc6d24ae5e33dcc1b69ee8 Mon Sep 17 00:00:00 2001
 From: Charalampos Mainas <cmainas@nubificus.com>
 Date: Tue, 15 Jun 2021 10:29:47 +0000
-Subject: [PATCH 1/2] Export KVM symbols for KVMM
+Subject: [PATCH 1/2] Export KVM symbols for Hedge
 
 Expose a set of KVM functions to the kernel, in order to be
 able to spawn a VM instance without assistance from user-space.
@@ -57,7 +57,7 @@ index 32c8a675e..79b51a4ee 100644
  
  /* Guest/host FPSIMD coordination helpers */
  int kvm_arch_vcpu_run_map_fp(struct kvm_vcpu *vcpu);
-+int kvmm_kvm_arch_vcpu_run_map_fp(struct kvm_vcpu *vcpu);
++int hedge_kvm_arch_vcpu_run_map_fp(struct kvm_vcpu *vcpu);
  void kvm_arch_vcpu_load_fp(struct kvm_vcpu *vcpu);
  void kvm_arch_vcpu_ctxsync_fp(struct kvm_vcpu *vcpu);
  void kvm_arch_vcpu_put_fp(struct kvm_vcpu *vcpu);
@@ -65,9 +65,9 @@ index 32c8a675e..79b51a4ee 100644
  	return kvm_arch_vcpu_run_map_fp(vcpu);
  }
  
-+static inline int kvmm_kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu)
++static inline int hedge_kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu)
 +{
-+	return kvmm_kvm_arch_vcpu_run_map_fp(vcpu);
++	return hedge_kvm_arch_vcpu_run_map_fp(vcpu);
 +}
 +
  void kvm_set_pmu_events(u32 set, struct perf_event_attr *attr);
@@ -81,11 +81,11 @@ index e329a36b2..274f8c47b 100644
  	return ret;
  }
  
-+int kvmm_kvm_arch_vcpu_run_map_fp(struct kvm_vcpu *vcpu)
++int hedge_kvm_arch_vcpu_run_map_fp(struct kvm_vcpu *vcpu)
 +{
 +	return kvm_arch_vcpu_run_map_fp(vcpu);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_run_map_fp);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_run_map_fp);
 +
  /*
   * Prepare vcpu for saving the host's FPSIMD state and loading the guest's.
@@ -98,24 +98,24 @@ index 50a279d3d..f64fe3a99 100644
  	return -EINVAL;
  }
  
-+int kvmm_kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu,
++int hedge_kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu,
 +				struct kvm_regs *regs)
 +{
 +	return kvm_arch_vcpu_ioctl_get_regs(vcpu, regs);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_get_regs);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_get_regs);
 +
  int kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
  {
  	return -EINVAL;
  }
  
-+int kvmm_kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu,
++int hedge_kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu,
 +				struct kvm_regs *regs)
 +{
 +	return kvm_arch_vcpu_ioctl_set_regs(vcpu, regs);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_set_regs);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_set_regs);
 +
 +
  static int copy_core_reg_indices(const struct kvm_vcpu *vcpu,
@@ -125,11 +125,11 @@ index 50a279d3d..f64fe3a99 100644
  	return kvm_arm_sys_reg_get_reg(vcpu, reg);
  }
  
-+int kvmm_kvm_arm_get_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
++int hedge_kvm_arm_get_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 +{
 +	return kvm_arm_get_reg(vcpu, reg);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arm_get_reg);
++EXPORT_SYMBOL(hedge_kvm_arm_get_reg);
 +
  int kvm_arm_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
  {
@@ -138,11 +138,11 @@ index 50a279d3d..f64fe3a99 100644
  	return kvm_arm_sys_reg_set_reg(vcpu, reg);
  }
  
-+int kvmm_kvm_arm_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
++int hedge_kvm_arm_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 +{
 +	return kvm_arm_set_reg(vcpu, reg);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arm_set_reg);
++EXPORT_SYMBOL(hedge_kvm_arm_set_reg);
 +
  int kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu,
  				  struct kvm_sregs *sregs)
@@ -151,12 +151,12 @@ index 50a279d3d..f64fe3a99 100644
  }
  
 +
-+int kvmm_kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu,
++int hedge_kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu,
 +				struct kvm_sregs *sregs)
 +{
 +	return kvm_arch_vcpu_ioctl_get_sregs(vcpu, sregs);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_get_sregs);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_get_sregs);
 +
  int kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
  				  struct kvm_sregs *sregs)
@@ -164,12 +164,12 @@ index 50a279d3d..f64fe3a99 100644
  	return -EINVAL;
  }
  
-+int kvmm_kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
++int hedge_kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
 +				struct kvm_sregs *sregs)
 +{
 +	return kvm_arch_vcpu_ioctl_set_sregs(vcpu, sregs);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_set_sregs);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_set_sregs);
 +
  int __kvm_arm_vcpu_get_events(struct kvm_vcpu *vcpu,
  			      struct kvm_vcpu_events *events)
@@ -178,11 +178,11 @@ index 50a279d3d..f64fe3a99 100644
  	return 0;
  }
  
-+int kvmm_kvm_vcpu_preferred_target(struct kvm_vcpu_init *init)
++int hedge_kvm_vcpu_preferred_target(struct kvm_vcpu_init *init)
 +{
 +	return kvm_vcpu_preferred_target(init);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_vcpu_preferred_target);
++EXPORT_SYMBOL(hedge_kvm_vcpu_preferred_target);
 +
  int kvm_arch_vcpu_ioctl_get_fpu(struct kvm_vcpu *vcpu, struct kvm_fpu *fpu)
  {
@@ -195,13 +195,13 @@ index 901cd1fde..c7d2071da 100644
  	return r;
  }
  
-+int kvmm_kvm_vcpu_ioctl_set_cpuid2(struct kvm_vcpu *vcpu,
++int hedge_kvm_vcpu_ioctl_set_cpuid2(struct kvm_vcpu *vcpu,
 +			      struct kvm_cpuid2 *cpuid,
 +			      struct kvm_cpuid_entry2 __user *entries)
 +{
 +	return kvm_vcpu_ioctl_set_cpuid2(vcpu, cpuid, entries);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_vcpu_ioctl_set_cpuid2);
++EXPORT_SYMBOL(hedge_kvm_vcpu_ioctl_set_cpuid2);
 +
  int kvm_vcpu_ioctl_get_cpuid2(struct kvm_vcpu *vcpu,
  			      struct kvm_cpuid2 *cpuid,
@@ -210,13 +210,13 @@ index 901cd1fde..c7d2071da 100644
  	return r;
  }
  
-+int kvmm_kvm_vcpu_ioctl_get_cpuid2(struct kvm_vcpu *vcpu,
++int hedge_kvm_vcpu_ioctl_get_cpuid2(struct kvm_vcpu *vcpu,
 +			      struct kvm_cpuid2 *cpuid,
 +			      struct kvm_cpuid_entry2 __user *entries)
 +{
 +	return kvm_vcpu_ioctl_get_cpuid2(vcpu, cpuid, entries);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_vcpu_ioctl_get_cpuid2);
++EXPORT_SYMBOL(hedge_kvm_vcpu_ioctl_get_cpuid2);
 +
  static __always_inline void kvm_cpu_cap_mask(enum cpuid_leafs leaf, u32 mask)
  {
@@ -225,14 +225,14 @@ index 901cd1fde..c7d2071da 100644
  	return r;
  }
  
-+int kvmm_kvm_dev_ioctl_get_cpuid(struct kvm_cpuid2 *cpuid,
++int hedge_kvm_dev_ioctl_get_cpuid(struct kvm_cpuid2 *cpuid,
 +			    struct kvm_cpuid_entry2 __user *entries,
 +			    unsigned int type)
 +{
 +	return kvm_dev_ioctl_get_cpuid(cpuid, entries, type);
 +
 +}
-+EXPORT_SYMBOL(kvmm_kvm_dev_ioctl_get_cpuid);
++EXPORT_SYMBOL(hedge_kvm_dev_ioctl_get_cpuid);
 +
  struct kvm_cpuid_entry2 *kvm_find_cpuid_entry(struct kvm_vcpu *vcpu,
  					      u32 function, u32 index)
@@ -245,11 +245,11 @@ index c17e6eb9a..8fdd13bdf 100644
  	return r;
  }
  
-+int kvmm_kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *kvm_run)
++int hedge_kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *kvm_run)
 +{
 +	return kvm_arch_vcpu_ioctl_run(vcpu, kvm_run);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_run);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_run);
 +
 +
  static void __get_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
@@ -259,12 +259,12 @@ index c17e6eb9a..8fdd13bdf 100644
  	vcpu_put(vcpu);
  	return 0;
  }
-+int kvmm_kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu,
++int hedge_kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu,
 +				struct kvm_regs *regs)
 +{
 +	return kvm_arch_vcpu_ioctl_get_regs(vcpu, regs);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_get_regs);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_get_regs);
  
  static void __set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
  {
@@ -272,12 +272,12 @@ index c17e6eb9a..8fdd13bdf 100644
  	vcpu_put(vcpu);
  	return 0;
  }
-+int kvmm_kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu,
++int hedge_kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu,
 +				struct kvm_regs *regs)
 +{
 +	return kvm_arch_vcpu_ioctl_set_regs(vcpu, regs);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_set_regs);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_set_regs);
  
  void kvm_get_cs_db_l_bits(struct kvm_vcpu *vcpu, int *db, int *l)
  {
@@ -285,12 +285,12 @@ index c17e6eb9a..8fdd13bdf 100644
  	vcpu_put(vcpu);
  	return 0;
  }
-+int kvmm_kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu,
++int hedge_kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu,
 +				  struct kvm_sregs *sregs)
 +{
 +	return kvm_arch_vcpu_ioctl_get_sregs(vcpu, sregs);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_get_sregs);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_get_sregs);
  
  int kvm_arch_vcpu_ioctl_get_mpstate(struct kvm_vcpu *vcpu,
  				    struct kvm_mp_state *mp_state)
@@ -298,12 +298,12 @@ index c17e6eb9a..8fdd13bdf 100644
  	vcpu_put(vcpu);
  	return ret;
  }
-+int kvmm_kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
++int hedge_kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
 +				  struct kvm_sregs *sregs)
 +{
 +	return kvm_arch_vcpu_ioctl_set_sregs(vcpu, sregs);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_set_sregs);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_set_sregs);
  
  int kvm_arch_vcpu_ioctl_set_guest_debug(struct kvm_vcpu *vcpu,
  					struct kvm_guest_debug *dbg)
@@ -315,13 +315,13 @@ index 131cc1527..d63eeca3d 100644
  
  #ifdef CONFIG_HAVE_KVM_VCPU_RUN_PID_CHANGE
  int kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu);
-+int kvmm_kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu);
++int hedge_kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu);
  #else
  static inline int kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu)
  {
  	return 0;
  }
-+static inline int kvmm_kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu)
++static inline int hedge_kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu)
 +{
 +	return 0;
 +}
@@ -332,16 +332,16 @@ index 131cc1527..d63eeca3d 100644
  				uintptr_t data, const char *name,
  				struct task_struct **thread_ptr);
  
-+struct kvm *kvmm_kvm_create_vm(unsigned long type);
-+int kvmm_kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id);
-+void kvmm_kvm_destroy_vm(struct kvm *kvm);
-+int kvmm_kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *kvm_run);
-+int kvmm_kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu, struct kvm_sregs *sregs);
-+int kvmm_kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu, struct kvm_sregs *sregs);
-+int kvmm_kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs);
-+int kvmm_kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs);
-+int kvmm_kvm_coalesced_mmio_init(struct kvm *kvm);
-+int kvmm_kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
++struct kvm *hedge_kvm_create_vm(unsigned long type);
++int hedge_kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id);
++void hedge_kvm_destroy_vm(struct kvm *kvm);
++int hedge_kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *kvm_run);
++int hedge_kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu, struct kvm_sregs *sregs);
++int hedge_kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu, struct kvm_sregs *sregs);
++int hedge_kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs);
++int hedge_kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs);
++int hedge_kvm_coalesced_mmio_init(struct kvm *kvm);
++int hedge_kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
 +				   struct kvm_userspace_memory_region *mem);
  #endif
 diff --git a/virt/kvm/arm/arm.c b/virt/kvm/arm/arm.c
@@ -352,11 +352,11 @@ index 48d0ec44a..d33bbb64b 100644
  {
  	return vcpu->arch.target >= 0;
  }
-+int kvmm_kvm_vcpu_initialized(struct kvm_vcpu *vcpu)
++int hedge_kvm_vcpu_initialized(struct kvm_vcpu *vcpu)
 +{
 +	return kvm_vcpu_initialized(vcpu);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_vcpu_initialized);
++EXPORT_SYMBOL(hedge_kvm_vcpu_initialized);
  
  static void check_vcpu_requests(struct kvm_vcpu *vcpu)
  {
@@ -364,11 +364,11 @@ index 48d0ec44a..d33bbb64b 100644
  	return ret;
  }
  
-+int kvmm_kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
++int hedge_kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
 +{
 +	return kvm_arch_vcpu_ioctl_run(vcpu, run);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_run);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_run);
 +
  static int vcpu_interrupt_line(struct kvm_vcpu *vcpu, int number, bool level)
  {
@@ -377,12 +377,12 @@ index 48d0ec44a..d33bbb64b 100644
  	return 0;
  }
  
-+int kvmm_kvm_arch_vcpu_ioctl_vcpu_init(struct kvm_vcpu *vcpu,
++int hedge_kvm_arch_vcpu_ioctl_vcpu_init(struct kvm_vcpu *vcpu,
 +					 struct kvm_vcpu_init *init)
 +{
 +	return kvm_arch_vcpu_ioctl_vcpu_init(vcpu, init);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_arch_vcpu_ioctl_vcpu_init);
++EXPORT_SYMBOL(hedge_kvm_arch_vcpu_ioctl_vcpu_init);
 +
  static int kvm_arm_vcpu_set_attr(struct kvm_vcpu *vcpu,
  				 struct kvm_device_attr *attr)
@@ -395,11 +395,11 @@ index 00c747dbc..ad7e540dc 100644
  	return 0;
  }
  
-+int kvmm_kvm_coalesced_mmio_init(struct kvm *kvm)
++int hedge_kvm_coalesced_mmio_init(struct kvm *kvm)
 +{
 +	return kvm_coalesced_mmio_init(kvm);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_coalesced_mmio_init);
++EXPORT_SYMBOL(hedge_kvm_coalesced_mmio_init);
 +
  void kvm_coalesced_mmio_free(struct kvm *kvm)
  {
@@ -412,11 +412,11 @@ index 731c1e517..b1ed23094 100644
  	mmdrop(current->mm);
  	return ERR_PTR(r);
  }
-+struct kvm *kvmm_kvm_create_vm(unsigned long type)
++struct kvm *hedge_kvm_create_vm(unsigned long type)
 +{
 +	return kvm_create_vm(type);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_create_vm);
++EXPORT_SYMBOL(hedge_kvm_create_vm);
  
  static void kvm_destroy_devices(struct kvm *kvm)
  {
@@ -424,11 +424,11 @@ index 731c1e517..b1ed23094 100644
  	mmdrop(mm);
  }
  
-+void kvmm_kvm_destroy_vm(struct kvm *kvm)
++void hedge_kvm_destroy_vm(struct kvm *kvm)
 +{
 +	kvm_destroy_vm(kvm);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_destroy_vm);
++EXPORT_SYMBOL(hedge_kvm_destroy_vm);
 +
  void kvm_get_kvm(struct kvm *kvm)
  {
@@ -437,12 +437,12 @@ index 731c1e517..b1ed23094 100644
  
  	return kvm_set_memory_region(kvm, mem);
  }
-+int kvmm_kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
++int hedge_kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
 +				  struct kvm_userspace_memory_region *mem)
 +{
 +	return kvm_vm_ioctl_set_memory_region(kvm, mem);
 +}
-+EXPORT_SYMBOL_GPL(kvmm_kvm_vm_ioctl_set_memory_region);
++EXPORT_SYMBOL_GPL(hedge_kvm_vm_ioctl_set_memory_region);
  
  #ifndef CONFIG_KVM_GENERIC_DIRTYLOG_READ_PROTECT
  /**
@@ -450,11 +450,11 @@ index 731c1e517..b1ed23094 100644
  	return r;
  }
  
-+int kvmm_kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
++int hedge_kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
 +{
 +	return kvm_vm_ioctl_create_vcpu(kvm, id);
 +}
-+EXPORT_SYMBOL(kvmm_kvm_vm_ioctl_create_vcpu);
++EXPORT_SYMBOL(hedge_kvm_vm_ioctl_create_vcpu);
 +
  static int kvm_vcpu_ioctl_set_sigmask(struct kvm_vcpu *vcpu, sigset_t *sigset)
  {

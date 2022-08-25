@@ -3,7 +3,7 @@ From: Charalampos Mainas <charalampos.mainas@gmail.com>
 Date: Tue, 31 Aug 2021 00:02:50 +0300
 Subject: [PATCH 2/2] Export vma allocation related functions
 
-KVMM guests use kernel allocated memory, which is obtained by vmalloc.
+Hedge guests use kernel allocated memory, which is obtained by vmalloc.
 On the other hand KVM expects a userspace memory and proccess to run
 guests. In order to avoid any changes in KVM code we the guest
 memory will be mapped to a real address space.
