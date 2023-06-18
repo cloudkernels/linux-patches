@@ -62,7 +62,7 @@ jobs:
     Patch-Linux:
      #tries to apply the patch to each version
        needs: [generate-matrix]
-       runs-on: ${{ matrix.architecture }}
+       runs-on: ["${{ matrix.architecture }}", "gcc"]
        #strategy matrix to run jobs in parallel for each version
        strategy:
          matrix:
@@ -86,7 +86,7 @@ jobs:
            run: |
              sudo apt-get -y update
              sudo apt-get -y install build-essential libncurses-dev bc bison flex libssl-dev libelf-dev
-             sudo apt-get -y install fakeroot rsync git kmod cpio
+             sudo apt-get -y install fakeroot rsync git kmod cpio liblz4-tool
 
          - name: Clone linux
            run: |
@@ -124,7 +124,9 @@ jobs:
              then
                 wget https://gist.githubusercontent.com/ananos/dc2e2323f1b9bcb93c24f307e367ae80/raw/a001e5dd3b02fb79001296b1f9ae39270288f8d9/aarch64_config -O arch/arm64/configs/hedge.config
              else
-                wget https://gist.githubusercontent.com/ananos/4749c77111a560503bd9725409d82800/raw/3e65dec157a7a19d965675054ef85ce8bc06c74b/basic%2520kernel%2520config -O arch/x86/configs/hedge.config
+             #wget https://gist.githubusercontent.com/ananos/4749c77111a560503bd9725409d82800/raw/3e65dec157a7a19d965675054ef85ce8bc06c74b/basic%2520kernel%2520config -O arch/x86/configs/hedge.config
+             #wget https://gist.githubusercontent.com/ananos/1031c91aa16b2be8098d5d386b625c7e/raw/dd0d170ebd3480b420e715ce85da8d3c4b096fce/hedge-x86.config -O arch/x86/configs/hedge.config
+                wget https://gist.githubusercontent.com/ananos/1031c91aa16b2be8098d5d386b625c7e/raw/9df4f61e0bb60fecad2308def2835a9ed5cbfcda/hedge-x86.config -O arch/x86/configs/hedge.config
              fi
              touch .config
              make hedge.config
