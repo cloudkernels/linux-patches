@@ -1,0 +1,123 @@
+From 51225be222c4cc8df99c0305b9d2330bd99b25a0 Mon Sep 17 00:00:00 2001
+From: Charalampos Mainas <charalampos.mainas@gmail.com>
+Date: Fri, 14 Jul 2023 18:09:17 +0300
+Subject: [PATCH] Export additional functions to create irqchip in KVM
+
+This patch exposes the necessary functions that are needed from Hedge,
+in order to create an irqchip, using KVM's API.
+
+Signed-off-by: Charalampos Mainas <cmainas@nubificus.co.uk>
+---
+ arch/x86/kvm/i8254.c    |  6 ++++++
+ arch/x86/kvm/i8259.c    | 12 ++++++++++++
+ arch/x86/kvm/ioapic.c   | 12 ++++++++++++
+ arch/x86/kvm/irq_comm.c |  6 ++++++
+ arch/x86/kvm/x86.c      |  1 +
+ 5 files changed, 37 insertions(+)
+
+diff --git a/arch/x86/kvm/i8254.c b/arch/x86/kvm/i8254.c
+index a6e218c61..86b9d9d0d 100644
+--- a/arch/x86/kvm/i8254.c
++++ b/arch/x86/kvm/i8254.c
+@@ -730,6 +730,12 @@ struct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags)
+ 	return NULL;
+ }
+ 
++struct kvm_pit *hedge_kvm_create_pit(struct kvm *kvm, u32 flags)
++{
++	return kvm_create_pit(kvm, flags);
++}
++EXPORT_SYMBOL(hedge_kvm_create_pit);
++
+ void kvm_free_pit(struct kvm *kvm)
+ {
+ 	struct kvm_pit *pit = kvm->arch.vpit;
+diff --git a/arch/x86/kvm/i8259.c b/arch/x86/kvm/i8259.c
+index 629a09ca9..196279813 100644
+--- a/arch/x86/kvm/i8259.c
++++ b/arch/x86/kvm/i8259.c
+@@ -637,6 +637,12 @@ int kvm_pic_init(struct kvm *kvm)
+ 	return ret;
+ }
+ 
++int hedge_kvm_pic_init(struct kvm *kvm)
++{
++	return kvm_pic_init(kvm);
++}
++EXPORT_SYMBOL(hedge_kvm_pic_init);
++
+ void kvm_pic_destroy(struct kvm *kvm)
+ {
+ 	struct kvm_pic *vpic = kvm->arch.vpic;
+@@ -653,3 +659,9 @@ void kvm_pic_destroy(struct kvm *kvm)
+ 	kvm->arch.vpic = NULL;
+ 	kfree(vpic);
+ }
++
++void hedge_kvm_pic_destroy(struct kvm *kvm)
++{
++	kvm_pic_destroy(kvm);
++}
++EXPORT_SYMBOL(hedge_kvm_pic_destroy);
+diff --git a/arch/x86/kvm/ioapic.c b/arch/x86/kvm/ioapic.c
+index d057376bd..ffdfa7684 100644
+--- a/arch/x86/kvm/ioapic.c
++++ b/arch/x86/kvm/ioapic.c
+@@ -711,6 +711,12 @@ int kvm_ioapic_init(struct kvm *kvm)
+ 	return ret;
+ }
+ 
++int hedge_kvm_ioapic_init(struct kvm *kvm)
++{
++	return kvm_ioapic_init(kvm);
++}
++EXPORT_SYMBOL(hedge_kvm_ioapic_init);
++
+ void kvm_ioapic_destroy(struct kvm *kvm)
+ {
+ 	struct kvm_ioapic *ioapic = kvm->arch.vioapic;
+@@ -726,6 +732,12 @@ void kvm_ioapic_destroy(struct kvm *kvm)
+ 	kfree(ioapic);
+ }
+ 
++void hedge_kvm_ioapic_destroy(struct kvm *kvm)
++{
++	kvm_ioapic_destroy(kvm);
++}
++EXPORT_SYMBOL(hedge_kvm_ioapic_destroy);
++
+ void kvm_get_ioapic(struct kvm *kvm, struct kvm_ioapic_state *state)
+ {
+ 	struct kvm_ioapic *ioapic = kvm->arch.vioapic;
+diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
+index c47d2acec..561f9c8b4 100644
+--- a/arch/x86/kvm/irq_comm.c
++++ b/arch/x86/kvm/irq_comm.c
+@@ -381,6 +381,12 @@ int kvm_setup_default_irq_routing(struct kvm *kvm)
+ 				   ARRAY_SIZE(default_routing), 0);
+ }
+ 
++int hedge_kvm_setup_default_irq_routing(struct kvm *kvm)
++{
++	return kvm_setup_default_irq_routing(kvm);
++}
++EXPORT_SYMBOL(hedge_kvm_setup_default_irq_routing);
++
+ static const struct kvm_irq_routing_entry empty_routing[] = {};
+ 
+ int kvm_setup_empty_irq_routing(struct kvm *kvm)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 770d9fc0f..8c17063a4 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3544,6 +3544,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 	return r;
+ 
+ }
++EXPORT_SYMBOL(kvm_vm_ioctl_check_extension);
+ 
+ long kvm_arch_dev_ioctl(struct file *filp,
+ 			unsigned int ioctl, unsigned long arg)
+-- 
+2.40.1
+
