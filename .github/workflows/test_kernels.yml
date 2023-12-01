@@ -62,7 +62,7 @@ jobs:
     Patch-Linux:
      #tries to apply the patch to each version
        needs: [generate-matrix]
-       runs-on: ["${{ matrix.architecture }}", "gcc"]
+       runs-on: ["${{ matrix.architecture }}", "gcc", "2004"]
        #strategy matrix to run jobs in parallel for each version
        strategy:
          matrix:
