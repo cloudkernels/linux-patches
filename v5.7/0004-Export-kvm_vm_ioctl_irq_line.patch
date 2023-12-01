@@ -1,0 +1,67 @@
+From 2d803a84d9eccad2adadc99c9559b75a852f19c3 Mon Sep 17 00:00:00 2001
+From: Charalampos Mainas <charalampos.mainas@gmail.com>
+Date: Tue, 12 Dec 2023 17:34:10 +0200
+Subject: [PATCH] Export kvm_vm_ioctl_irq_line
+
+A small patch to export the kvm_vm_ioctl_irq_line function, in order to
+allow Hedge to use it.
+This function is required for serial console.
+
+Signed-off-by: Matias Ezequiel Vara Larsen <mvara@nubificus.co.uk>
+Signed-off-by: Charalampos Mainas <cmainas@nubificus.co.uk>
+---
+ arch/x86/kvm/x86.c       | 7 +++++++
+ include/linux/kvm_host.h | 2 ++
+ virt/kvm/arm/arm.c       | 7 +++++++
+ 3 files changed, 16 insertions(+)
+
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 8ea73933e..e0f63ab04 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4820,6 +4820,13 @@ int kvm_vm_ioctl_irq_line(struct kvm *kvm, struct kvm_irq_level *irq_event,
+ 	return 0;
+ }
+ 
++int hedge_kvm_arch_vm_ioctl_irq_line(struct kvm *kvm, struct kvm_irq_level *irq_event,
++				     bool line_status)
++{
++	return kvm_vm_ioctl_irq_line(kvm, irq_event, line_status);
++}
++EXPORT_SYMBOL(hedge_kvm_arch_vm_ioctl_irq_line);
++
+ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
+ 			    struct kvm_enable_cap *cap)
+ {
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 37e1c57a9..06cff0c5b 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -1440,4 +1440,6 @@ int hedge_kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *r
+ int hedge_kvm_coalesced_mmio_init(struct kvm *kvm);
+ int hedge_kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
+ 				   struct kvm_userspace_memory_region *mem);
++int hedge_kvm_arch_vm_ioctl_irq_line(struct kvm *kvm, struct kvm_irq_level *irq_event,
++				     bool line_status);
+ #endif
+diff --git a/virt/kvm/arm/arm.c b/virt/kvm/arm/arm.c
+index 2436dddf9..613906230 100644
+--- a/virt/kvm/arm/arm.c
++++ b/virt/kvm/arm/arm.c
+@@ -935,6 +935,13 @@ int kvm_vm_ioctl_irq_line(struct kvm *kvm, struct kvm_irq_level *irq_level,
+ 	return -EINVAL;
+ }
+ 
++int hedge_kvm_arch_vm_ioctl_irq_line(struct kvm *kvm, struct kvm_irq_level *irq_event,
++				     bool line_status)
++{
++	return kvm_vm_ioctl_irq_line(kvm, irq_event, line_status);
++}
++EXPORT_SYMBOL(hedge_kvm_arch_vm_ioctl_irq_line);
++
+ static int kvm_vcpu_set_target(struct kvm_vcpu *vcpu,
+ 			       const struct kvm_vcpu_init *init)
+ {
+-- 
+2.40.1
+
