@@ -7,7 +7,7 @@ on:
   # Triggers the workflow on push or pull requeest events but only for the main branch
   push:
     branches:
-      - main
+      - runner_version
   pull_request:
     branches:
       - main
@@ -20,7 +20,7 @@ jobs:
   # This workflow contains two jobs. The first one will create a dynamic matrix to use as strategy for the second job
     generate-matrix:
       name: Generate matrix for build
-      runs-on: ubuntu-latest
+      runs-on: ubuntu:22.04
       outputs:
         matrix: ${{ steps.set-matrix.outputs.matrix }}
       steps:
