@@ -1,0 +1,75 @@
+From d1edd1ffb76443e5232749c0cce7bffeb203ec21 Mon Sep 17 00:00:00 2001
+From: Charalampos Mainas <cmainas@nubificus.co.uk>
+Date: Wed, 7 Feb 2024 19:44:26 +0200
+Subject: [PATCH] Export APIs for kvm_ioeventfd
+
+Hedge's virtio implementation uses ioeventfd. As a result, we need to
+export the kvm_ioeventfd related functions to register the eventfd in a
+VM. Moreover, we need to create a new eventfd and therefore we need the
+do_eventfd function from fs/eventfd.c
+
+Signed-off-by: Matias Ezequiel Vara Larsen <matiasevara@gmail.com>
+Signed-off-by: Charalampos Mainas <cmainas@nubificus.co.uk>
+---
+ fs/eventfd.c             | 6 ++++++
+ include/linux/eventfd.h  | 1 +
+ include/linux/kvm_host.h | 1 +
+ virt/kvm/eventfd.c       | 6 ++++++
+ 4 files changed, 14 insertions(+)
+
+diff --git a/fs/eventfd.c b/fs/eventfd.c
+index df466ef81..7e6b5d02e 100644
+--- a/fs/eventfd.c
++++ b/fs/eventfd.c
+@@ -445,6 +445,12 @@ static int do_eventfd(unsigned int count, int flags)
+ 	return fd;
+ }
+ 
++int hedge_eventfd(unsigned int count, int flags)
++{
++       return do_eventfd(count, flags);
++}
++EXPORT_SYMBOL(hedge_eventfd);
++
+ SYSCALL_DEFINE2(eventfd2, unsigned int, count, int, flags)
+ {
+ 	return do_eventfd(count, flags);
+diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
+index dc4fd8a66..af40bbfe7 100644
+--- a/include/linux/eventfd.h
++++ b/include/linux/eventfd.h
+@@ -39,6 +39,7 @@ struct file *eventfd_fget(int fd);
+ struct eventfd_ctx *eventfd_ctx_fdget(int fd);
+ struct eventfd_ctx *eventfd_ctx_fileget(struct file *file);
+ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n);
++int hedge_eventfd(unsigned int count, int flags);
+ int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx, wait_queue_entry_t *wait,
+ 				  __u64 *cnt);
+ 
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index bca063db8..5ebaa497e 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -1457,4 +1457,5 @@ int hedge_kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
+ 				   struct kvm_userspace_memory_region *mem);
+ int hedge_kvm_arch_vm_ioctl_irq_line(struct kvm *kvm, struct kvm_irq_level *irq_event,
+ 				     bool line_status);
++int hedge_kvm_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args);
+ #endif
+diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+index ef7ed916a..6f3bc6ff6 100644
+--- a/virt/kvm/eventfd.c
++++ b/virt/kvm/eventfd.c
+@@ -960,3 +960,9 @@ kvm_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
+ 
+ 	return kvm_assign_ioeventfd(kvm, args);
+ }
++
++int hedge_kvm_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
++{
++       return kvm_ioeventfd(kvm, args);
++}
++EXPORT_SYMBOL(hedge_kvm_ioeventfd);
+-- 
+2.43.0
+
